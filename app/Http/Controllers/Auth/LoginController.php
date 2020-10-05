@@ -20,7 +20,7 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
-
+    use RedirectsUsers;
     /**
      * Where to redirect users after login.
      *
@@ -36,5 +36,21 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+    public function redirectPath(){
+        if(Auth::check()){
+            if(auth::user()->status == 'active'){
+                $role = Auth::user()->role;
+                if( $role =='admin' ){
+                    return '/admin/profil';
+                }elseif($role == 'user'){
+                    return '/user/dashboard';
+                }
+            }elseif(auth::user()->status == 'banned'){
+                Auth::logout();
+            }else{
+                Auth::logout();
+            }
+        }
     }
 }
